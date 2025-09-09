@@ -1,1 +1,1 @@
-![Demo video](readme_assets/demo.gif)
+![Demo video](readme_assets/gif_video_demo.gif)
