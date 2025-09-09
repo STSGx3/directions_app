@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -11,6 +13,7 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,10 +75,22 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
 
         // Click mở Google Maps
         holder.itemView.setOnClickListener(v -> {
-            String uri = "google.navigation:q=" + address.getLat() + "," + address.getLon();
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-            intent.setPackage("com.google.android.apps.maps");
-            context.startActivity(intent);
+            Drawable original = holder.arrowIcon.getDrawable(); // lưu hình gốc
+            GradientDrawable circle = new GradientDrawable();
+            circle.setShape(GradientDrawable.OVAL);
+            circle.setColor(Color.parseColor("#D3D3D3"));
+            holder.arrowIcon.setBackground(circle);
+            holder.arrowIcon.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100).withEndAction(() -> {
+                String uri = "google.navigation:q=" + address.getLat() + "," + address.getLon();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                intent.setPackage("com.google.android.apps.maps");
+                context.startActivity(intent);
+
+                holder.arrowIcon.setBackground(null);
+                holder.arrowIcon.setScaleX(1f);
+                holder.arrowIcon.setScaleY(1f);
+                holder.arrowIcon.setImageDrawable(original);
+            }).start();
         });
     }
 
@@ -86,10 +101,12 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
 
     public static class AddressViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
+        private ImageView arrowIcon;
 
         public AddressViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvAddress);
+            arrowIcon=itemView.findViewById(R.id.arrow_icon);
         }
     }
 }
